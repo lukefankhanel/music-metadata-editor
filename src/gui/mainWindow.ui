@@ -315,68 +315,6 @@
              <item row="0" column="0">
               <widget class="QTextEdit" name="songComment"/>
              </item>
-             <item row="1" column="0">
-              <widget class="QTreeWidget" name="treeWidget">
-               <property name="alternatingRowColors">
-                <bool>true</bool>
-               </property>
-               <property name="selectionMode">
-                <enum>QAbstractItemView::ExtendedSelection</enum>
-               </property>
-               <property name="selectionBehavior">
-                <enum>QAbstractItemView::SelectItems</enum>
-               </property>
-               <property name="sortingEnabled">
-                <bool>false</bool>
-               </property>
-               <property name="animated">
-                <bool>true</bool>
-               </property>
-               <property name="headerHidden">
-                <bool>true</bool>
-               </property>
-               <column>
-                <property name="text">
-                 <string>1</string>
-                </property>
-               </column>
-               <item>
-                <property name="text">
-                 <string>New Item</string>
-                </property>
-                <item>
-                 <property name="text">
-                  <string>New Subitem</string>
-                 </property>
-                 <item>
-                  <property name="text">
-                   <string>New Subitem</string>
-                  </property>
-                  <item>
-                   <property name="text">
-                    <string>New Subitem</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>New Item</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>New Item</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>New Item</string>
-                   </property>
-                  </item>
-                 </item>
-                </item>
-               </item>
-              </widget>
-             </item>
             </layout>
            </widget>
            <widget class="QWidget" name="tab_2">
@@ -437,40 +375,7 @@
   </action>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>actionOpenFolder</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>openFileDialog()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>436</x>
-     <y>333</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>treeView</sender>
-   <signal>clicked(QModelIndex)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>songSelected()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>125</x>
-     <y>285</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>349</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
  <slots>
   <slot>openFileDialog()</slot>
   <slot>songSelected(string)</slot>
