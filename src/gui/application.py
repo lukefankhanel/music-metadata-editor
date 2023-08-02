@@ -15,20 +15,25 @@ class Application(QMainWindow, mainWindow.Ui_MainWindow):
         self.setupUi(self)
         
         self.fieldChangedDictionary = {}
+        self.isFileReading = False
 
         self.actionOpenFolder.triggered.connect(self.openFileDialog)
         self.actionSave.triggered.connect(self.saveMetadata)
-        #self.treeView.clicked.connect(self.songSelected2)
 
-        self.songTitle.textEdited.connect(self.trackEdit)
-        self.songArtist.textEdited.connect(self.trackEdit)
-        self.songAlbum.textEdited.connect(self.trackEdit)
-        self.songDate.textEdited.connect(self.trackEdit)
-        self.songGenre.textEdited.connect(self.trackEdit)
-        self.songComposer.textEdited.connect(self.trackEdit)
-        self.songURL.textEdited.connect(self.trackEdit)
-        self.songComment.textChanged.connect(self.trackEdit)
-        self.songDescription.textChanged.connect(self.trackEdit)
+        self.trackNumberCurrent.valueChanged.connect(self.trackEdited)
+        self.trackNumberMaximum.valueChanged.connect(self.trackEdited)
+        self.diskNumberCurrent.valueChanged.connect(self.trackEdited)
+        self.diskNumberMaximum.valueChanged.connect(self.trackEdited)
+        self.songTitle.textEdited.connect(self.trackEdited)
+        self.songArtist.textEdited.connect(self.trackEdited)
+        self.songAlbum.textEdited.connect(self.trackEdited)
+        self.songDate.textEdited.connect(self.trackEdited)
+        self.songGenre.textEdited.connect(self.trackEdited)
+        self.songComposer.textEdited.connect(self.trackEdited)
+        self.songURL.textEdited.connect(self.trackEdited)
+        self.replayGain.valueChanged.connect(self.trackEdited)
+        self.songComment.textChanged.connect(self.trackEdited)
+        self.songDescription.textChanged.connect(self.trackEdited)
 
     def openFileDialog(self):
         options = QFileDialog.Options()
@@ -59,25 +64,21 @@ class Application(QMainWindow, mainWindow.Ui_MainWindow):
       
 
     def itemSelected(self, selected, deselected):
-        self.fieldChangedDictionary.clear()
         fullSelection = self.treeView.selectionModel().selectedIndexes()
-        print(fullSelection)
+        #print(fullSelection)
         if len(fullSelection) > 0:
             model = fullSelection[0].model()
-            print(model.isDir(fullSelection[0]))
+            #print(model.isDir(fullSelection[0]))
             for selection in reversed(fullSelection):
                 if not model.isDir(selection):
-
-                    # We have to block the textChanged signal from firing for the QTextEdit 
-                    # fields because the textChanged signal listens for ALL edits, 
-                    # not just user edits. Therefore, tracking the change that the program 
-                    # makes just putting the data in does not make sense. We turn the blocking 
-                    # off once the data has been put into the fields.
-                    self.songComment.blockSignals(True)
-                    self.songDescription.blockSignals(True)
-                   
+                    self.isFileReading = True
                     file = audiotypes.createFileObject(model.filePath(selection))
-                    #print(file.getAllFileMetadata())
+
+                    self.trackNumberCurrent.setValue(file.getTrackNumberCurrent())
+                    self.trackNumberMaximum.setValue(file.getTrackNumberMaximum())
+                    self.diskNumberCurrent.setValue(file.getDiskNumberCurrent())
+                    self.diskNumberMaximum.setValue(file.getDiskNumberMaximum())
+
                     self.songTitle.setText(file.getTitle())
                     self.songArtist.setText(file.getArtist())
                     self.songAlbum.setText(file.getAlbum())
@@ -85,21 +86,22 @@ class Application(QMainWindow, mainWindow.Ui_MainWindow):
                     self.songGenre.setText(file.getGenre())
                     self.songComposer.setText(file.getComposer())
                     self.songURL.setText(file.getURL())
+                    self.replayGain.setValue(file.getReplayGain())
 
                     self.songComment.setPlainText(file.getComment())
                     self.songDescription.setPlainText(file.getDescription())
                     # Not listening for changes with trackEdited because this field should be immutable.
                     self.songRawMetadata.setPlainText(file.getAllFileMetadata())
-
-                    self.songComment.blockSignals(False)
-                    self.songDescription.blockSignals(False)
                     break
                     #print(filePath)
             #selected[0].setFlags()
+        self.isFileReading = False
+        self.fieldChangedDictionary.clear()
 
 
-    def trackEdit(self):
-        self.fieldChangedDictionary[self.sender().objectName()] = True
+    def trackEdited(self):
+        if not self.isFileReading:
+            self.fieldChangedDictionary[self.sender().objectName()] = True
         print(self.fieldChangedDictionary)
 
     def saveMetadata(self):
@@ -114,24 +116,33 @@ class Application(QMainWindow, mainWindow.Ui_MainWindow):
                 for selection in songSelectionsOnly:
                     file = audiotypes.createFileObject(model.filePath(selection))
                     for field, value in self.fieldChangedDictionary.items():
-                        if value:
-                            if field == "songTitle":
-                                file.setTitle(self.songTitle.text())
-                            if field == "songArtist":
-                                file.setArtist(self.songArtist.text())
-                            if field == "songAlbum":
-                                file.setAlbum(self.songAlbum.text())
-                            if field == "songDate":
-                                file.setDate(self.songDate.text())
-                            if field == "songGenre":
-                                file.setGenre(self.songGenre.text())
-                            if field == "songComposer":
-                                file.setComposer(self.songComposer.text())
-                            if field == "songURL":
-                                file.setURL(self.songURL.text())
-                            if field == "songComment":
-                                file.setComment(self.songComment.toPlainText())
-                            if field == "songDescription":
-                                file.setDescription(self.songDescription.toPlainText())
+                        if field == "trackNumberCurrent":
+                            file.setTrackNumberCurrent(self.trackNumberCurrent.value())
+                        if field == "trackNumberMaximum":
+                            file.setTrackNumberMaximum(self.trackNumberMaximum.value())
+                        if field == "diskNumberCurrent":
+                            file.setDiskNumberCurrent(self.diskNumberCurrent.value())
+                        if field == "diskNumberMaximum":
+                            file.setDiskNumberMaximum(self.diskNumberMaximum.value())
+                        if field == "songTitle":
+                            file.setTitle(self.songTitle.text())
+                        if field == "songArtist":
+                            file.setArtist(self.songArtist.text())
+                        if field == "songAlbum":
+                            file.setAlbum(self.songAlbum.text())
+                        if field == "songDate":
+                            file.setDate(self.songDate.text())
+                        if field == "songGenre":
+                            file.setGenre(self.songGenre.text())
+                        if field == "songComposer":
+                            file.setComposer(self.songComposer.text())
+                        if field == "songURL":
+                            file.setURL(self.songURL.text())
+                        if field == "replayGain":
+                            file.setReplayGain(self.replayGain.value())
+                        if field == "songComment":
+                            file.setComment(self.songComment.toPlainText())
+                        if field == "songDescription":
+                            file.setDescription(self.songDescription.toPlainText())
                     file.saveMetadata()
         self.fieldChangedDictionary.clear()

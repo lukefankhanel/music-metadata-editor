@@ -4,7 +4,7 @@ from mutagen.oggopus import OggOpus
 from mutagen.mp4 import MP4
 from mutagen.mp3 import MP3
 from mutagen.flac import FLAC
-import mutagen.mp3
+from mutagen.id3 import ID3, TXXX
 
 
 def createFileObject(fileLocation):
@@ -28,9 +28,36 @@ class SongFile(ABC):
         except:
             return ""
     
+    def getMetadataFieldNumber(self, field):
+        try:
+            number = self.getMetadataField(field)
+            return 0 if number == "" else int(number)
+        except:
+            return 0
+    
     def setMetadataField(self, field, value):
         self.file[field] = value
 
+
+    def getTrackNumberCurrent(self):
+        return self.getMetadataFieldNumber("tracknumber")
+    def setTrackNumberCurrent(self, value):
+        self.setMetadataField("tracknumber", str(value))
+    
+    def getTrackNumberMaximum(self):
+        return self.getMetadataFieldNumber("tracktotal")
+    def setTrackNumberMaximum(self, value):
+        self.setMetadataField("tracktotal", str(value))
+    
+    def getDiskNumberCurrent(self):
+        return self.getMetadataFieldNumber("discnumber")
+    def setDiskNumberCurrent(self, value):
+        self.setMetadataField("discnumber", str(value))
+    
+    def getDiskNumberMaximum(self):
+        return self.getMetadataFieldNumber("disctotal")
+    def setDiskNumberMaximum(self, value):
+        self.setMetadataField("disctotal", str(value))
 
     def getTitle(self):
         return self.getMetadataField("title")
@@ -67,15 +94,29 @@ class SongFile(ABC):
     def setURL(self, value):
         self.setMetadataField("purl", value)
 
-    def getDescription(self):
-        return self.getMetadataField("description")
-    def setDescription(self, value):
-        self.setMetadataField("description", value)
+    def getReplayGain(self):
+        try:
+            replayGain = self.getMetadataField("replaygain_track_gain")
+            return 0 if replayGain == "" else self.convertReplayGainToFloat(replayGain)
+        except:
+            return 0
+    def setReplayGain(self, value):
+        self.setMetadataField("replaygain_track_gain", self.convertFloatToReplayGain(value))
+    def convertReplayGainToFloat(self, value):
+        return float(value.split()[0])
+    def convertFloatToReplayGain(self, value):
+        # https://stackoverflow.com/questions/6149006/how-to-display-a-float-with-two-decimal-places
+        return "%.2f" % value + " dB"
 
     def getComment(self):
         return self.getMetadataField("comment")
     def setComment(self, value):
         self.setMetadataField("comment", value)
+
+    def getDescription(self):
+        return self.getMetadataField("description")
+    def setDescription(self, value):
+        self.setMetadataField("description", value)
 
     def getAllFileMetadata(self):
         return self.file.pprint()
@@ -100,7 +141,7 @@ class FLACFile(SongFile):
 
 class MP3File(SongFile):
     def __init__(self, fileLocation):
-        self.file = MP3(fileLocation)
+        self.file = ID3(fileLocation)
 
     def getTitle(self):
         return self.getMetadataField("TIT2")
@@ -134,19 +175,35 @@ class MP3File(SongFile):
 
 #TODO Investigate URL and Comment not showing
     def getURL(self):
-        return self.getMetadataField("WXXX")
+        frames = self.file.getall("WXXX")
+        for frame in frames:
+            if frame.url:
+                return frame.url
+        return ""
     def setURL(self, value):
         self.setMetadataField("WXXX", value)
+
+    def getReplayGain(self):
+        # https://stackoverflow.com/questions/4040605/does-anyone-have-good-examples-of-using-mutagen-to-write-to-files
+        # https://mutagen.readthedocs.io/en/latest/user/id3.html
+        frames = self.file.getall("TXXX")
+        for frame in frames:
+            if frame.desc == "replaygain_track_gain":
+                return self.convertReplayGainToFloat(frame.text[0])
+        return 0.00
+    def setReplayGain(self, value):
+        self.setMetadataField("TXXX=replaygain_track_gain", self.convertFloatToReplayGain(value))
+
+    def getComment(self):
+        return self.getMetadataField("COMM")
+    def setComment(self, value):
+        self.setMetadataField("COMM", value)
 
     def getDescription(self):
         return self.getMetadataField("TIT1")
     def setDescription(self, value):
         self.setMetadataField("TIT1", value)
 
-    def getComment(self):
-        return self.getMetadataField("COMM")
-    def setComment(self, value):
-        self.setMetadataField("COMM", value)
 
 class MP4File(SongFile):
     def __init__(self, fileLocation):
