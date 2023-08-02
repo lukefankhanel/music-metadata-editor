@@ -105,14 +105,20 @@
         <property name="checkable">
          <bool>false</bool>
         </property>
-        <layout class="QGridLayout" name="gridLayout_2">
-         <item row="0" column="0">
+        <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,0">
+         <property name="verticalSpacing">
+          <number>20</number>
+         </property>
+         <item row="1" column="0">
           <layout class="QFormLayout" name="formLayout">
            <property name="sizeConstraint">
             <enum>QLayout::SetDefaultConstraint</enum>
            </property>
            <property name="fieldGrowthPolicy">
             <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+           </property>
+           <property name="verticalSpacing">
+            <number>6</number>
            </property>
            <item row="0" column="0">
             <widget class="QLabel" name="label_10">
@@ -300,10 +306,43 @@
            <item row="7" column="1">
             <widget class="QLineEdit" name="songURL"/>
            </item>
+           <item row="8" column="0">
+            <widget class="QLabel" name="label_8">
+             <property name="text">
+              <string>Replay Gain</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="1">
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <item>
+              <widget class="QDoubleSpinBox" name="replayGain"/>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
           </layout>
          </item>
-         <item row="1" column="0">
+         <item row="2" column="0">
           <widget class="QTabWidget" name="tabWidget">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="currentIndex">
             <number>0</number>
            </property>
@@ -324,6 +363,20 @@
             <layout class="QGridLayout" name="gridLayout_3">
              <item row="0" column="0">
               <widget class="QTextEdit" name="songDescription"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tab_3">
+            <attribute name="title">
+             <string>Raw Metadata</string>
+            </attribute>
+            <layout class="QGridLayout" name="gridLayout_5">
+             <item row="0" column="0">
+              <widget class="QTextEdit" name="songRawMetadata">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>

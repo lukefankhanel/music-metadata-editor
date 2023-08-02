@@ -9,13 +9,6 @@ from gui import mainWindow
 import audiotypes
 
 
-# TODO
-# Popup dialog when saving changes. Ask the user if they're okay with it, and show list of songs
-# Add track and disk functionality
-# Figure out MP3 fields not showing
-# Test all file types
-# Clean up comments/spacing/imports etc.
-
 class Application(QMainWindow, mainWindow.Ui_MainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -31,7 +24,6 @@ class Application(QMainWindow, mainWindow.Ui_MainWindow):
         self.songArtist.textEdited.connect(self.trackEdit)
         self.songAlbum.textEdited.connect(self.trackEdit)
         self.songDate.textEdited.connect(self.trackEdit)
-        self.songGenre.textEdited.connect(self.trackEdit)
         self.songGenre.textEdited.connect(self.trackEdit)
         self.songComposer.textEdited.connect(self.trackEdit)
         self.songURL.textEdited.connect(self.trackEdit)
@@ -75,6 +67,12 @@ class Application(QMainWindow, mainWindow.Ui_MainWindow):
             print(model.isDir(fullSelection[0]))
             for selection in reversed(fullSelection):
                 if not model.isDir(selection):
+
+                    # We have to block the textChanged signal from firing for the QTextEdit 
+                    # fields because the textChanged signal listens for ALL edits, 
+                    # not just user edits. Therefore, tracking the change that the program 
+                    # makes just putting the data in does not make sense. We turn the blocking 
+                    # off once the data has been put into the fields.
                     self.songComment.blockSignals(True)
                     self.songDescription.blockSignals(True)
                    
@@ -88,8 +86,10 @@ class Application(QMainWindow, mainWindow.Ui_MainWindow):
                     self.songComposer.setText(file.getComposer())
                     self.songURL.setText(file.getURL())
 
-                    self.songComment.setText(file.getComment())
-                    self.songDescription.setText(file.getDescription())
+                    self.songComment.setPlainText(file.getComment())
+                    self.songDescription.setPlainText(file.getDescription())
+                    # Not listening for changes with trackEdited because this field should be immutable.
+                    self.songRawMetadata.setPlainText(file.getAllFileMetadata())
 
                     self.songComment.blockSignals(False)
                     self.songDescription.blockSignals(False)
@@ -100,7 +100,7 @@ class Application(QMainWindow, mainWindow.Ui_MainWindow):
 
     def trackEdit(self):
         self.fieldChangedDictionary[self.sender().objectName()] = True
-        #print(self.fieldChangedDictionary)
+        print(self.fieldChangedDictionary)
 
     def saveMetadata(self):
         fullSelection = self.treeView.selectionModel().selectedIndexes()
