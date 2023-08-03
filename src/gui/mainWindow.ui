@@ -231,6 +231,12 @@
            </item>
            <item row="1" column="0">
             <widget class="QLabel" name="label">
+             <property name="font">
+              <font>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
+             </property>
              <property name="text">
               <string>Title</string>
              </property>
@@ -316,7 +322,14 @@
            <item row="8" column="1">
             <layout class="QHBoxLayout" name="horizontalLayout_3">
              <item>
-              <widget class="QDoubleSpinBox" name="replayGain"/>
+              <widget class="QDoubleSpinBox" name="replayGain">
+               <property name="suffix">
+                <string/>
+               </property>
+               <property name="minimum">
+                <double>-99.989999999999995</double>
+               </property>
+              </widget>
              </item>
              <item>
               <spacer name="horizontalSpacer">

@@ -90,9 +90,9 @@ class SongFile(ABC):
         self.setMetadataField("composer", value)
 
     def getURL(self):
-        return self.getMetadataField("purl")
+        return self.getMetadataField("url")
     def setURL(self, value):
-        self.setMetadataField("purl", value)
+        self.setMetadataField("url", value)
 
     def getReplayGain(self):
         try:
@@ -125,19 +125,20 @@ class SongFile(ABC):
         self.file.save()
     
 
+class FLACFile(SongFile):
+    def __init__(self, fileLocation):
+        self.file = FLAC(fileLocation)
+
 
 class OGGFile(SongFile):
     def __init__(self, fileLocation):
         self.file = OggOpus(fileLocation)
 
-class FLACFile(SongFile):
-    def __init__(self, fileLocation):
-        self.file = FLAC(fileLocation)
-    
     def getURL(self):
-        return self.getMetadataField("url")
+        return self.getMetadataField("purl")
     def setURL(self, value):
-        self.setMetadataField("url", value)
+        self.setMetadataField("purl", value)
+
 
 class MP3File(SongFile):
     def __init__(self, fileLocation):

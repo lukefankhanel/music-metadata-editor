@@ -95,6 +95,8 @@ class Application(QMainWindow, mainWindow.Ui_MainWindow):
                     break
                     #print(filePath)
             #selected[0].setFlags()
+
+        # To stop the unblockable signals from firing and affecting the list of changes the user makes
         self.isFileReading = False
         self.fieldChangedDictionary.clear()
 
