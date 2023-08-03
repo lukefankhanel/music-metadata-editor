@@ -15,6 +15,8 @@ C:\Users\ [YOUR USER] \AppData\Local\Programs\Python\Python38-32\Lib\site-packag
     - Remove data from form when everything is deselected
     - Bold changed fields
     - Perhaps add PURL and URL different fields because YTDL stores them as PURL, but AIMP stores them as URL
+    - Add Try Catch to Set Metadata Field
+    - Fix Encoding, remove it from the object creations because it's probably not needed
     - Test all file types and ensure data is being read/saved correctly
     - Popup dialog when saving changes. Ask the user if they're okay with it, and show list of songs
     - Clean up project comments/spacing/imports etc.
