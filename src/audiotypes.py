@@ -156,52 +156,52 @@ class MP3File(SongFile):
     def getTrackNumberCurrent(self):
         return  self.splitTrackDiskInteger(self.getMetadataField("TRCK"), 0)
     def setTrackNumberCurrent(self, value):
-        self.setMetadataField(TRCK(encoding=3, text=(str(value) + "/" + str(self.getTrackNumberMaximum()))))
+        self.setMetadataField(TRCK(text=(str(value) + "/" + str(self.getTrackNumberMaximum()))))
     
     def getTrackNumberMaximum(self):
         return  self.splitTrackDiskInteger(self.getMetadataField("TRCK"), 1)
     def setTrackNumberMaximum(self, value):
-        self.setMetadataField(TRCK(encoding=3, text=(str(self.getTrackNumberCurrent()) + "/" + str(value))))
+        self.setMetadataField(TRCK(text=(str(self.getTrackNumberCurrent()) + "/" + str(value))))
     
     def getDiskNumberCurrent(self):
         return  self.splitTrackDiskInteger(self.getMetadataField("TPOS"), 0)
     def setDiskNumberCurrent(self, value):
-        self.setMetadataField(TPOS(encoding=3, text=(str(value) + "/" + str(self.getDiskNumberMaximum()))))
+        self.setMetadataField(TPOS(text=(str(value) + "/" + str(self.getDiskNumberMaximum()))))
     
     def getDiskNumberMaximum(self):
         return  self.splitTrackDiskInteger(self.getMetadataField("TPOS"), 1)
     def setDiskNumberMaximum(self, value):
-        self.setMetadataField(TPOS(encoding=3, text=(str(self.getDiskNumberCurrent()) + "/" + str(value))))
+        self.setMetadataField(TPOS(text=(str(self.getDiskNumberCurrent()) + "/" + str(value))))
 
     def getTitle(self):
         return self.getMetadataField("TIT2")
     def setTitle(self, value):
-        self.setMetadataField(TIT2(encoding=3, text=value))
+        self.setMetadataField(TIT2(text=value))
 
     def getArtist(self):
         return self.getMetadataField("TPE1")
     def setArtist(self, value):
-        self.setMetadataField(TPE1(encoding=3, text=value))
+        self.setMetadataField(TPE1(text=value))
 
     def getAlbum(self):
         return self.getMetadataField("TALB")
     def setAlbum(self, value):
-        self.setMetadataField(TALB(encoding=3, text=value))
+        self.setMetadataField(TALB(text=value))
 
     def getDate(self):
         return str(self.getMetadataField("TDRC"))
     def setDate(self, value):
-        self.setMetadataField(TDRC(encoding=3, text=value))
+        self.setMetadataField(TDRC(text=value))
 
     def getGenre(self):
         return self.getMetadataField("TCON")
     def setGenre(self, value):
-        self.setMetadataField(TCON(encoding=3, text=value))
+        self.setMetadataField(TCON(text=value))
 
     def getComposer(self):
         return self.getMetadataField("TCOM")
     def setComposer(self, value):
-        self.setMetadataField(TCOM(encoding=3, text=value))
+        self.setMetadataField(TCOM(text=value))
 
     def getURL(self):
         frames = self.file.getall("WXXX")
@@ -210,7 +210,7 @@ class MP3File(SongFile):
                 return frame.url
         return ""
     def setURL(self, value):
-        self.setMetadataField(WXXX(encoding=3, desc="", url=value))
+        self.setMetadataField(WXXX(desc="", url=value))
 
     def getReplayGain(self):
         # https://stackoverflow.com/questions/4040605/does-anyone-have-good-examples-of-using-mutagen-to-write-to-files
@@ -220,25 +220,25 @@ class MP3File(SongFile):
         frames = self.file.getall("TXXX")
         for frame in frames:
             if frame.desc == "replaygain_track_gain":
-                return self.convertReplayGainToFloat(frame.text[0])
+                if len(frame.text) > 0:
+                    return self.convertReplayGainToFloat(frame.text[0])
         return 0.00
     def setReplayGain(self, value):
-        self.setMetadataField(TXXX(encoding=3, desc="replaygain_track_gain", text=self.convertFloatToReplayGain(value)))
+        self.setMetadataField(TXXX(desc="replaygain_track_gain", text=self.convertFloatToReplayGain(value)))
 
     def getComment(self):
         frames = self.file.getall("COMM")
-        print(frames)
         for frame in frames:
             if len(frame.text) > 0:
                 return frame.text[0]
         return ""
     def setComment(self, value):
-        self.setMetadataField(COMM(encoding=3, desc="", lang="eng", text=value))
+        self.setMetadataField(COMM(desc="", lang="eng", text=value))
 
     def getDescription(self):
         return self.getMetadataField("TIT1")
     def setDescription(self, value):
-        self.setMetadataField(TIT1(encoding=3, text=value))
+        self.setMetadataField(TIT1(text=value))
 
 
 class MP4File(SongFile):
