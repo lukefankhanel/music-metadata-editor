@@ -134,6 +134,16 @@ class OGGFile(SongFile):
     def __init__(self, fileLocation):
         self.file = OggOpus(fileLocation)
 
+    def getTrackNumberMaximum(self):
+        return self.getMetadataFieldNumber("totaltracks")
+    def setTrackNumberMaximum(self, value):
+        self.setMetadataField("totaltracks", str(value))
+    
+    def getDiskNumberMaximum(self):
+        return self.getMetadataFieldNumber("totaldiscs")
+    def setDiskNumberMaximum(self, value):
+        self.setMetadataField("totaldiscs", str(value))
+
     def getURL(self):
         return self.getMetadataField("purl")
     def setURL(self, value):
