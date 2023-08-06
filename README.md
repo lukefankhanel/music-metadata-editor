@@ -24,5 +24,6 @@ C:\Users\ [YOUR USER] \AppData\Local\Programs\Python\Python38-32\Lib\site-packag
         - M4A
         - ✓ MP3
     - Popup dialog when saving changes. Ask the user if they're okay with it, and show list of songs
+    - Simplfy for loops
     - Clean up project comments/spacing/imports etc.
     - Write down tutorial in README for compiling the .ui file and such

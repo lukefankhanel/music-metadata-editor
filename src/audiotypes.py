@@ -149,6 +149,39 @@ class OGGFile(SongFile):
     def setURL(self, value):
         self.setMetadataField("purl", value)
 
+    """
+    https://datatracker.ietf.org/doc/html/rfc7845.html
+    https://en.wikipedia.org/w/index.php?title=Q_%28number_format%29&oldid=697252615
+    https://hydrogenaud.io/index.php/topic,119279.0.html
+    This is a difficult issue to fix. The value is stored inside the ID header's 'output gain'
+    field. As such, with Mutagen, there appears to be no way to access and change this field.
+    The R128_Track/Album_Gain fields are used to DERIVE the value of the gain from the
+    afformentioned output gain field. The output gain stores the actual DISC replay gain.
+    Then, to get the TRACK gain, you take the difference of the output gain fields and the
+    R128_TRACK_GAIN field. In most cases, the R128_ALBUM_GAIN field is not used.
+    I've tried just setting the Track Gain field regardless without having access to the
+    ID headers, to no avail. All in all, such a stupid, unintuitive rediculous design choice.
+    I have no idea why you would go against what literally every other codec does just to be
+    "fancy". Dumb. This could be fixed, but you'd have to use another library that allows for
+    the setting of the ID headers. 
+    """
+
+    # def getReplayGain(self):
+    #     replayGain = self.getMetadataField("R128_TRACK_GAIN")
+    #     return 0 if replayGain == "" else self.convertReplayGainToFloat(replayGain)
+    # def setReplayGain(self, value):
+    #     self.setMetadataField("R128_TRACK_GAIN", self.convertFloatToReplayGain(value))
+    # def convertReplayGainToFloat(self, value):
+    #     try:
+    #         return float(value.split()[0])
+    #     except:
+    #         return 0
+    # def convertFloatToReplayGain(self, value):
+    #     try:
+    #         return str(int(value * 256))
+    #     except:
+    #         return "0"
+
 
 class MP3File(SongFile):
     def __init__(self, fileLocation):
