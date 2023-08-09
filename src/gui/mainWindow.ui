@@ -121,7 +121,7 @@
             <number>6</number>
            </property>
            <item row="0" column="0">
-            <widget class="QLabel" name="label_10">
+            <widget class="QLabel" name="TrackNumberLabel">
              <property name="text">
               <string>Track #</string>
              </property>
@@ -130,7 +130,7 @@
            <item row="0" column="1">
             <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
-              <widget class="QSpinBox" name="trackNumberCurrent">
+              <widget class="QSpinBox" name="TrackNumberCurrentField">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -162,7 +162,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="trackNumberMaximum">
+              <widget class="QSpinBox" name="TrackNumberMaximumField">
                <property name="minimumSize">
                 <size>
                  <width>45</width>
@@ -188,14 +188,14 @@
               </spacer>
              </item>
              <item>
-              <widget class="QLabel" name="label_11">
+              <widget class="QLabel" name="DiskNumberLabel">
                <property name="text">
                 <string>Disk #</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="diskNumberCurrent">
+              <widget class="QSpinBox" name="DiskNumberCurrentField">
                <property name="minimumSize">
                 <size>
                  <width>45</width>
@@ -215,7 +215,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="diskNumberMaximum">
+              <widget class="QSpinBox" name="DiskNumberMaximumField">
                <property name="minimumSize">
                 <size>
                  <width>45</width>
@@ -230,7 +230,7 @@
             </layout>
            </item>
            <item row="1" column="0">
-            <widget class="QLabel" name="label">
+            <widget class="QLabel" name="TitleLabel">
              <property name="font">
               <font>
                <weight>50</weight>
@@ -243,37 +243,37 @@
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QLineEdit" name="songTitle"/>
+            <widget class="QLineEdit" name="TitleField"/>
            </item>
            <item row="2" column="0">
-            <widget class="QLabel" name="label_2">
+            <widget class="QLabel" name="ArtistLabel">
              <property name="text">
               <string>Artist</string>
              </property>
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QLineEdit" name="songArtist"/>
+            <widget class="QLineEdit" name="ArtistField"/>
            </item>
            <item row="3" column="0">
-            <widget class="QLabel" name="label_3">
+            <widget class="QLabel" name="AlbumLabel">
              <property name="text">
               <string>Album</string>
              </property>
             </widget>
            </item>
            <item row="3" column="1">
-            <widget class="QLineEdit" name="songAlbum"/>
+            <widget class="QLineEdit" name="AlbumField"/>
            </item>
            <item row="4" column="0">
-            <widget class="QLabel" name="label_4">
+            <widget class="QLabel" name="DateLabel">
              <property name="text">
               <string>Date</string>
              </property>
             </widget>
            </item>
            <item row="4" column="1">
-            <widget class="QLineEdit" name="songDate">
+            <widget class="QLineEdit" name="DateField">
              <property name="styleSheet">
               <string notr="true"/>
              </property>
@@ -283,37 +283,37 @@
             </widget>
            </item>
            <item row="5" column="0">
-            <widget class="QLabel" name="label_5">
+            <widget class="QLabel" name="GenreLabel">
              <property name="text">
               <string>Genre</string>
              </property>
             </widget>
            </item>
            <item row="5" column="1">
-            <widget class="QLineEdit" name="songGenre"/>
+            <widget class="QLineEdit" name="GenreField"/>
            </item>
            <item row="6" column="0">
-            <widget class="QLabel" name="label_6">
+            <widget class="QLabel" name="ComposerLabel">
              <property name="text">
               <string>Composer</string>
              </property>
             </widget>
            </item>
            <item row="6" column="1">
-            <widget class="QLineEdit" name="songComposer"/>
+            <widget class="QLineEdit" name="ComposerField"/>
            </item>
            <item row="7" column="0">
-            <widget class="QLabel" name="label_7">
+            <widget class="QLabel" name="URLLabel">
              <property name="text">
               <string>URL</string>
              </property>
             </widget>
            </item>
            <item row="7" column="1">
-            <widget class="QLineEdit" name="songURL"/>
+            <widget class="QLineEdit" name="URLField"/>
            </item>
            <item row="8" column="0">
-            <widget class="QLabel" name="label_8">
+            <widget class="QLabel" name="ReplayGainLabel">
              <property name="text">
               <string>Replay Gain</string>
              </property>
@@ -322,7 +322,7 @@
            <item row="8" column="1">
             <layout class="QHBoxLayout" name="horizontalLayout_3">
              <item>
-              <widget class="QDoubleSpinBox" name="replayGain">
+              <widget class="QDoubleSpinBox" name="ReplayGainField">
                <property name="suffix">
                 <string/>
                </property>
@@ -356,6 +356,12 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="font">
+            <font>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
            <property name="currentIndex">
             <number>0</number>
            </property>
@@ -365,7 +371,7 @@
             </attribute>
             <layout class="QGridLayout" name="gridLayout">
              <item row="0" column="0">
-              <widget class="QTextEdit" name="songComment"/>
+              <widget class="QTextEdit" name="CommentField"/>
              </item>
             </layout>
            </widget>
@@ -375,7 +381,7 @@
             </attribute>
             <layout class="QGridLayout" name="gridLayout_3">
              <item row="0" column="0">
-              <widget class="QTextEdit" name="songDescription"/>
+              <widget class="QTextEdit" name="DescriptionField"/>
              </item>
             </layout>
            </widget>
@@ -385,7 +391,7 @@
             </attribute>
             <layout class="QGridLayout" name="gridLayout_5">
              <item row="0" column="0">
-              <widget class="QTextEdit" name="songRawMetadata">
+              <widget class="QTextEdit" name="RawMetadataField">
                <property name="readOnly">
                 <bool>true</bool>
                </property>

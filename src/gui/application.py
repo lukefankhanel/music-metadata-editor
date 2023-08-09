@@ -2,7 +2,7 @@
 from json import JSONDecodeError
 import PyQt5
 from PyQt5.QtWidgets import (
-    QApplication, QDialog, QMainWindow, QMessageBox, QFileDialog
+    QApplication, QDialog, QMainWindow, QMessageBox, QFileDialog, QProxyStyle, QTabBar, QStyle
 )
 import PyQt5.QtWidgets as pqw
 from gui import mainWindow
@@ -14,26 +14,48 @@ class Application(QMainWindow, mainWindow.Ui_MainWindow):
         super().__init__(parent)
         self.setupUi(self)
         
+        # Maps the object names of the fields to the instantiated label 
+        # objects so that we can set the label text to bold dynamically.
+        # PyQT5's buddy system could also achieve a similar effect, 
+        # but since you can only attach one buddy to each field label pair,
+        # the Disk and Track number fields will not work correctly 
+        # unless we do it in a different way.
+        self.labelFieldMappingDictionary = {
+            "TrackNumberCurrentField": self.TrackNumberLabel,
+            "TrackNumberMaximumField": self.TrackNumberLabel,
+            "DiskNumberCurrentField": self.DiskNumberLabel,
+            "DiskNumberMaximumField": self.DiskNumberLabel,
+            "TitleField": self.TitleLabel,
+            "ArtistField": self.ArtistLabel,
+            "AlbumField": self.AlbumLabel,
+            "DateField": self.DateLabel,
+            "GenreField": self.GenreLabel,
+            "ComposerField": self.ComposerLabel,
+            "URLField": self.URLLabel,
+            "ReplayGainField": self.ReplayGainLabel,
+            # "CommentField": self.CommentLabel,
+            # "DescriptionField": self.DescriptionLabel
+            }
         self.fieldChangedDictionary = {}
         self.isFileReading = False
 
         self.actionOpenFolder.triggered.connect(self.openFileDialog)
         self.actionSave.triggered.connect(self.saveMetadata)
 
-        self.trackNumberCurrent.valueChanged.connect(self.trackEdited)
-        self.trackNumberMaximum.valueChanged.connect(self.trackEdited)
-        self.diskNumberCurrent.valueChanged.connect(self.trackEdited)
-        self.diskNumberMaximum.valueChanged.connect(self.trackEdited)
-        self.songTitle.textEdited.connect(self.trackEdited)
-        self.songArtist.textEdited.connect(self.trackEdited)
-        self.songAlbum.textEdited.connect(self.trackEdited)
-        self.songDate.textEdited.connect(self.trackEdited)
-        self.songGenre.textEdited.connect(self.trackEdited)
-        self.songComposer.textEdited.connect(self.trackEdited)
-        self.songURL.textEdited.connect(self.trackEdited)
-        self.replayGain.valueChanged.connect(self.trackEdited)
-        self.songComment.textChanged.connect(self.trackEdited)
-        self.songDescription.textChanged.connect(self.trackEdited)
+        self.TrackNumberCurrentField.valueChanged.connect(self.trackEdited)
+        self.TrackNumberMaximumField.valueChanged.connect(self.trackEdited)
+        self.DiskNumberCurrentField.valueChanged.connect(self.trackEdited)
+        self.DiskNumberMaximumField.valueChanged.connect(self.trackEdited)
+        self.TitleField.textEdited.connect(self.trackEdited)
+        self.ArtistField.textEdited.connect(self.trackEdited)
+        self.AlbumField.textEdited.connect(self.trackEdited)
+        self.DateField.textEdited.connect(self.trackEdited)
+        self.GenreField.textEdited.connect(self.trackEdited)
+        self.ComposerField.textEdited.connect(self.trackEdited)
+        self.URLField.textEdited.connect(self.trackEdited)
+        self.ReplayGainField.valueChanged.connect(self.trackEdited)
+        self.CommentField.textChanged.connect(self.trackEdited)
+        self.DescriptionField.textChanged.connect(self.trackEdited)
 
     def openFileDialog(self):
         options = QFileDialog.Options()
@@ -74,24 +96,24 @@ class Application(QMainWindow, mainWindow.Ui_MainWindow):
                     self.isFileReading = True
                     file = audiotypes.createFileObject(model.filePath(selection))
 
-                    self.trackNumberCurrent.setValue(file.getTrackNumberCurrent())
-                    self.trackNumberMaximum.setValue(file.getTrackNumberMaximum())
-                    self.diskNumberCurrent.setValue(file.getDiskNumberCurrent())
-                    self.diskNumberMaximum.setValue(file.getDiskNumberMaximum())
+                    self.TrackNumberCurrentField.setValue(file.getTrackNumberCurrent())
+                    self.TrackNumberMaximumField.setValue(file.getTrackNumberMaximum())
+                    self.DiskNumberCurrentField.setValue(file.getDiskNumberCurrent())
+                    self.DiskNumberMaximumField.setValue(file.getDiskNumberMaximum())
 
-                    self.songTitle.setText(file.getTitle())
-                    self.songArtist.setText(file.getArtist())
-                    self.songAlbum.setText(file.getAlbum())
-                    self.songDate.setText(file.getDate())
-                    self.songGenre.setText(file.getGenre())
-                    self.songComposer.setText(file.getComposer())
-                    self.songURL.setText(file.getURL())
-                    self.replayGain.setValue(file.getReplayGain())
+                    self.TitleField.setText(file.getTitle())
+                    self.ArtistField.setText(file.getArtist())
+                    self.AlbumField.setText(file.getAlbum())
+                    self.DateField.setText(file.getDate())
+                    self.GenreField.setText(file.getGenre())
+                    self.ComposerField.setText(file.getComposer())
+                    self.URLField.setText(file.getURL())
+                    self.ReplayGainField.setValue(file.getReplayGain())
 
-                    self.songComment.setPlainText(file.getComment())
-                    self.songDescription.setPlainText(file.getDescription())
+                    self.CommentField.setPlainText(file.getComment())
+                    self.DescriptionField.setPlainText(file.getDescription())
                     # Not listening for changes with trackEdited because this field should be immutable.
-                    self.songRawMetadata.setPlainText(file.getAllFileMetadata())
+                    self.RawMetadataField.setPlainText(file.getAllFileMetadata())
                     break
                     #print(filePath)
             #selected[0].setFlags()
@@ -99,11 +121,14 @@ class Application(QMainWindow, mainWindow.Ui_MainWindow):
         # To stop the unblockable signals from firing and affecting the list of changes the user makes
         self.isFileReading = False
         self.fieldChangedDictionary.clear()
+        self.clearCSS()
 
 
     def trackEdited(self):
         if not self.isFileReading:
-            self.fieldChangedDictionary[self.sender().objectName()] = True
+            fieldName = self.sender().objectName()
+            self.labelFieldMappingDictionary[fieldName].setStyleSheet("font-weight: bold")
+            self.fieldChangedDictionary[fieldName] = True
         print(self.fieldChangedDictionary)
 
     def saveMetadata(self):
@@ -118,33 +143,38 @@ class Application(QMainWindow, mainWindow.Ui_MainWindow):
                 for selection in songSelectionsOnly:
                     file = audiotypes.createFileObject(model.filePath(selection))
                     for field, value in self.fieldChangedDictionary.items():
-                        if field == "trackNumberCurrent":
-                            file.setTrackNumberCurrent(self.trackNumberCurrent.value())
-                        if field == "trackNumberMaximum":
-                            file.setTrackNumberMaximum(self.trackNumberMaximum.value())
-                        if field == "diskNumberCurrent":
-                            file.setDiskNumberCurrent(self.diskNumberCurrent.value())
-                        if field == "diskNumberMaximum":
-                            file.setDiskNumberMaximum(self.diskNumberMaximum.value())
-                        if field == "songTitle":
-                            file.setTitle(self.songTitle.text())
-                        if field == "songArtist":
-                            file.setArtist(self.songArtist.text())
-                        if field == "songAlbum":
-                            file.setAlbum(self.songAlbum.text())
-                        if field == "songDate":
-                            file.setDate(self.songDate.text())
-                        if field == "songGenre":
-                            file.setGenre(self.songGenre.text())
-                        if field == "songComposer":
-                            file.setComposer(self.songComposer.text())
-                        if field == "songURL":
-                            file.setURL(self.songURL.text())
-                        if field == "replayGain":
-                            file.setReplayGain(self.replayGain.value())
-                        if field == "songComment":
-                            file.setComment(self.songComment.toPlainText())
-                        if field == "songDescription":
-                            file.setDescription(self.songDescription.toPlainText())
+                        if field == "TrackNumberCurrentField":
+                            file.setTrackNumberCurrent(self.TrackNumberCurrentField.value())
+                        if field == "TrackNumberMaximumField":
+                            file.setTrackNumberMaximum(self.TrackNumberMaximumField.value())
+                        if field == "DiskNumberCurrentField":
+                            file.setDiskNumberCurrent(self.DiskNumberCurrentField.value())
+                        if field == "DiskNumberMaximumField":
+                            file.setDiskNumberMaximum(self.DiskNumberMaximumField.value())
+                        if field == "TitleField":
+                            file.setTitle(self.TitleField.text())
+                        if field == "ArtistField":
+                            file.setArtist(self.ArtistField.text())
+                        if field == "AlbumField":
+                            file.setAlbum(self.AlbumField.text())
+                        if field == "DateField":
+                            file.setDate(self.DateField.text())
+                        if field == "GenreField":
+                            file.setGenre(self.GenreField.text())
+                        if field == "ComposerField":
+                            file.setComposer(self.ComposerField.text())
+                        if field == "URLField":
+                            file.setURL(self.URLField.text())
+                        if field == "ReplayGainField":
+                            file.setReplayGain(self.ReplayGainField.value())
+                        if field == "CommentField":
+                            file.setComment(self.CommentField.toPlainText())
+                        if field == "DescriptionField":
+                            file.setDescription(self.DescriptionField.toPlainText())
                     file.saveMetadata()
         self.fieldChangedDictionary.clear()
+        self.clearCSS()
+
+    def clearCSS(self):
+        for key, value in self.labelFieldMappingDictionary.items():
+            value.setStyleSheet("font-weight: normal")
