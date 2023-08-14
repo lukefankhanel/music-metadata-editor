@@ -1,18 +1,17 @@
 
 from json import JSONDecodeError
-import PyQt5
-from PyQt5.QtWidgets import (
-    QApplication, QDialog, QMainWindow, QMessageBox, QFileDialog, QProxyStyle, QTabBar, QStyle
-)
-import PyQt5.QtWidgets as pqw
+from PyQt5 import QtWidgets, QtGui
 from gui import mainWindow
 import audiotypes
 
 
-class Application(QMainWindow, mainWindow.Ui_MainWindow):
+class Application(QtWidgets.QMainWindow, mainWindow.Ui_MainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+        self.setupTabWidget()
+        self.connectSignals()
+        
         
         # Maps the object names of the fields to the instantiated label 
         # objects so that we can set the label text to bold dynamically.
@@ -54,16 +53,87 @@ class Application(QMainWindow, mainWindow.Ui_MainWindow):
         self.ComposerField.textEdited.connect(self.trackEdited)
         self.URLField.textEdited.connect(self.trackEdited)
         self.ReplayGainField.valueChanged.connect(self.trackEdited)
-        self.CommentField.textChanged.connect(self.trackEdited)
-        self.DescriptionField.textChanged.connect(self.trackEdited)
+        # self.CommentField.textChanged.connect(self.trackEdited)
+        # self.DescriptionField.textChanged.connect(self.trackEdited)
+
+    def setupTabWidget(self):
+        pass
+        self.tabWidget = QtWidgets.QTabWidget(self.groupBox)
+        self.gridLayout_2.addWidget(self.tabWidget, 2, 0, 1, 1)
+
+
+        
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
+
+
+        self.tabWidget.setSizePolicy(sizePolicy)
+
+
+
+        font = QtGui.QFont()
+        font.setBold(False)
+        font.setWeight(50)
+        self.tabWidget.setFont(font)
+
+
+        self.tabWidget.setObjectName("tabWidget")
+
+
+        self.tab = QtWidgets.QWidget()
+        self.tab.setObjectName("tab")
+        self.tab_2 = QtWidgets.QWidget()
+        self.tab_2.setObjectName("tab_2")
+        self.tab_3 = QtWidgets.QWidget()
+        self.tab_3.setObjectName("tab_3")
+
+
+
+        self.gridLayout = QtWidgets.QGridLayout(self.tab)
+        self.gridLayout.setObjectName("gridLayout")
+        self.gridLayout_3 = QtWidgets.QGridLayout(self.tab_2)
+        self.gridLayout_3.setObjectName("gridLayout_3")
+        self.gridLayout_5 = QtWidgets.QGridLayout(self.tab_3)
+        self.gridLayout_5.setObjectName("gridLayout_5")
+
+
+        self.CommentField = QtWidgets.QTextEdit(self.tab)
+        self.DescriptionField = QtWidgets.QTextEdit(self.tab_2)
+        self.RawMetadataField = QtWidgets.QTextEdit(self.tab_3)
+        self.RawMetadataField.setReadOnly(True)
+
+        self.CommentField.setObjectName("CommentField")
+        self.DescriptionField.setObjectName("DescriptionField")
+        self.RawMetadataField.setObjectName("RawMetadataField")
+
+        self.gridLayout.addWidget(self.CommentField, 0, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.DescriptionField, 0, 0, 1, 1)
+        self.gridLayout_5.addWidget(self.RawMetadataField, 0, 0, 1, 1)
+
+
+        self.tabWidget.addTab(self.tab, "Comment")  
+        self.tabWidget.addTab(self.tab_2, "Description")
+        self.tabWidget.addTab(self.tab_3, "Raw Metadata")
+
+
+        self.gridLayout_2.addWidget(self.tabWidget, 2, 0, 1, 1)
+        self.horizontalLayout.addWidget(self.groupBox)
+        self.horizontalLayout.setStretch(0, 5)
+        self.horizontalLayout.setStretch(2, 10)
+        self.gridLayout_4.addLayout(self.horizontalLayout, 0, 0, 1, 1)
+
+    def connectSignals(self):
+        pass
 
     def openFileDialog(self):
-        options = QFileDialog.Options()
-        fileName = QFileDialog.getExistingDirectory(self,"QFileDialog.getOpenFileName()", "", options=options)
+        options = QtWidgets.QFileDialog.Options()
+        fileName = QtWidgets.QFileDialog.getExistingDirectory(self, "QFileDialog.getOpenFileName()", "", options=options)
         if fileName:
             print(fileName)
 
-        model = pqw.QFileSystemModel()
+        model = QtWidgets.QFileSystemModel()
         model.setRootPath(fileName)
         
 
@@ -178,3 +248,31 @@ class Application(QMainWindow, mainWindow.Ui_MainWindow):
     def clearCSS(self):
         for key, value in self.labelFieldMappingDictionary.items():
             value.setStyleSheet("font-weight: normal")
+
+
+# https://stackoverflow.com/questions/64214635/how-to-change-the-font-of-a-specific-tab-in-qtabwidget-in-pyside2
+class TabBarStyle(QtWidgets.QProxyStyle):
+    def drawControl(self, element, option, painter, widget=None):
+        index = -1
+        if element == QtWidgets.QStyle.CE_TabBarTab:
+            if isinstance(widget, TabBar):
+                for i in widget.fonts.keys():
+                    if widget.tabRect(i) == option.rect:
+                        index = i
+                        break
+            if index > -1:
+                painter.save()
+                painter.setFont(widget.fonts[index])
+        super(TabBarStyle, self).drawControl(element, option, painter, widget)
+        if index > -1:
+            painter.restore()
+
+
+class TabBar(QtWidgets.QTabBar):
+    def __init__(self, parent=None):
+        super(TabBar, self).__init__(parent)
+        self._fonts = dict()
+
+    @property
+    def fonts(self):
+        return self._fonts
